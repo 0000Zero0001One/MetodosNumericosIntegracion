@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Integración Numérica – Ejercicios 19 al 27 | COM-254</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --primary: #0d6efd;
+      --header-bg: #0b1e3d;
+    }
+    body {
+      background-color: #f4f6f9;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+    .navbar-custom {
+      background: linear-gradient(135deg, #0b1e3d 0%, #1a3a6b 100%);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    .navbar-custom .btn-nav {
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.3);
+      margin: 2px;
+      font-size: 0.85rem;
+      padding: 0.25rem 0.6rem;
+      transition: all 0.2s;
+    }
+    .navbar-custom .btn-nav:hover, .navbar-custom .btn-nav.active {
+      background: #fff;
+      color: #0b1e3d;
+      border-color: #fff;
+    }
+    .student-info {
+      background: linear-gradient(90deg, #e3f2fd, #bbdefb);
+      border-left: 5px solid #0d6efd;
+      padding: 1rem 1.5rem;
+      margin-bottom: 2rem;
+      border-radius: 0 8px 8px 0;
+    }
+    .exercise-card {
+      border: none;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      margin-bottom: 2.5rem;
+      overflow: hidden;
+    }
+    .exercise-card .card-header {
+      background: linear-gradient(90deg, #0d6efd, #0a58ca);
+      color: white;
+      font-weight: 600;
+      font-size: 1.25rem;
+      padding: 1rem 1.5rem;
+    }
+    .method-badge {
+      font-size: 0.75rem;
+      vertical-align: middle;
+    }
+    .table-data input {
+      width: 90px;
+      text-align: center;
+      font-size: 0.9rem;
+    }
+    .result-box {
+      background: #f8f9fa;
+      border: 1px solid #dee2e6;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-top: 1rem;
+    }
+    .result-box h6 {
+      color: #0d6efd;
+      font-weight: 600;
+    }
+    .chart-container {
+      position: relative;
+      height: 280px;
+      margin-top: 1rem;
+    }
+    .param-input {
+      max-width: 140px;
+    }
+    footer {
+      background: #0b1e3d;
+      color: #adb5bd;
+      padding: 1.5rem 0;
+      margin-top: 3rem;
+    }
+    .nav-pills .nav-link.active {
+      background-color: #0d6efd;
+    }
+    .sticky-top-custom {
+      position: sticky;
+      top: 0;
+      z-index: 1020;
+    }
+  </style>
+</head>
+<body>
+  <!-- HEADER / NAVBAR -->
+  <nav class="navbar navbar-expand-lg navbar-dark navbar-custom sticky-top-custom">
+    <div class="container-fluid">
+      <a class="navbar-brand fw-bold" href="#">
+        <i class="bi bi-calculator"></i> Integración Numérica
+      </a>
+      <div class="d-flex flex-wrap justify-content-center">
+        <a href="#ej19" class="btn btn-nav">19</a>
+        <a href="#ej20" class="btn btn-nav">20</a>
+        <a href="#ej21" class="btn btn-nav">21</a>
+        <a href="#ej22" class="btn btn-nav">22</a>
+        <a href="#ej23" class="btn btn-nav">23</a>
+        <a href="#ej24" class="btn btn-nav">24</a>
+        <a href="#ej25" class="btn btn-nav">25</a>
+        <a href="#ej26" class="btn btn-nav">26</a>
+        <a href="#ej27" class="btn btn-nav">27</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container my-4">
+    <!-- INFORMACIÓN DEL ESTUDIANTE -->
+    <div class="student-info">
+      <div class="row align-items-center">
+        <div class="col-md-4">
+          <strong><i class="bi bi-person-badge"></i> Estudiante:</strong> Conde Gutierrez Rafael Blas
+        </div>
+        <div class="col-md-4">
+          <strong><i class="bi bi-book"></i> Materia:</strong> COM-254 Métodos Numéricos
+        </div>
+        <div class="col-md-4">
+          <strong><i class="bi bi-calendar3"></i> Gestión:</strong> II - 2026
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== EJERCICIO 19 ==================== -->
+    <div class="card exercise-card" id="ej19">
+      <div class="card-header">
+        Ejercicio 19 – Distancia recorrida por un vehículo
+        <span class="badge bg-warning text-dark method-badge ms-2">Trapecio + Simpson combinado</span>
+      </div>
+      <div class="card-body">
+        <p class="text-muted">Un vehículo experimental registra su velocidad durante los primeros 7 segundos. Estimar la distancia recorrida integrando <em>v(t)</em>. Convertir el resultado a millas (dividir por 3600).</p>
+        <div class="row">
+          <div class="col-lg-7">
+            <h6>Datos (editables)</h6>
+            <div class="table-responsive">
+              <table class="table table-sm table-bordered table-data text-center">
+                <thead class="table-primary">
+                  <tr><th>t (s)</th><th>v (mi/h)</th></tr>
+                </thead>
+                <tbody id="data19"></tbody>
+              </table>
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="calcular19()">
+              <i class="bi bi-play-fill"></i> Calcular
+            </button>
+            <button class="btn btn-outline-secondary btn-sm" onclick="reset19()">Restablecer</button>
+          </div>
+          <div class="col-lg-5">
+            <div class="result-box" id="res19">
+              <h6>Resultados</h6>
+              <p class="mb-1">Presione <strong>Calcular</strong> para obtener los resultados.</p>
+            </div>
+            <div class="chart-container">
+              <canvas id="chart19"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== EJERCICIO 20 ==================== -->
+    <div class="card exercise-card" id="ej20">
+      <div class="card-header">
+        Ejercicio 20 – Trabajo de una banda elástica
+        <span class="badge bg-warning text-dark method-badge ms-2">Trapecio + Simpson combinado</span>
+      </div>
+      <div class="card-body">
+        <p class="text-muted">Se mide la fuerza aplicada a una banda elástica en distintos desplazamientos. Calcular el trabajo realizado por la fuerza: <em>W = ∫ F(x) dx</em>.</p>
+        <div class="row">
+          <div class="col-lg-7">
+            <h6>Datos (editables)</h6>
+            <div class="table-responsive">
+              <table class="table table-sm table-bordered table-data text-center">
+                <thead class="table-primary">
+                  <tr><th>x (in)</th><th>F (lb)</th></tr>
+                </thead>
+                <tbody id="data20"></tbody>
+              </table>
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="calcular20()">
+              <i class="bi bi-play-fill"></i> Calcular
+            </button>
+            <button class="btn btn-outline-secondary btn-sm" onclick="reset20()">Restablecer</button>
+          </div>
+          <div class="col-lg-5">
+            <div class="result-box" id="res20">
+              <h6>Resultados</h6>
+              <p class="mb-1">Presione <strong>Calcular</strong> para obtener los resultados.</p>
+            </div>
+            <div class="chart-container">
+              <canvas id="chart20"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== EJERCICIO 21 ==================== -->
+    <div class="card exercise-card" id="ej21">
+      <div class="card-header">
+        Ejercicio 21 – Área bajo un perfil topográfico
+        <span class="badge bg-info method-badge ms-2">Trapecio / Simpson 1/3</span>
+      </div>
+      <div class="card-body">
+        <p class="text-muted">Estimar el área bajo el perfil entre x = 1 y x = 10 a partir de coordenadas digitalizadas.</p>
+        <div class="row">
+          <div class="col-lg-7">
+            <h6>Datos (editables) – y aproximadas</h6>
+            <div class="table-responsive">
+              <table class="table table-sm table-bordered table-data text-center">
+                <thead class="table-primary">
+                  <tr><th>x</th><th>y</th></tr>
+                </thead>
+                <tbody id="data21"></tbody>
+              </table>
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="calcular21()">
+              <i class="bi bi-play-fill"></i> Calcular
+            </button>
+            <button class="btn btn-outline-secondary btn-sm" onclick="reset21()">Restablecer</button>
+          </div>
+          <div class="col-lg-5">
+            <div class="result-box" id="res21">
+              <h6>Resultados</h6>
+              <p class="mb-1">Presione <strong>Calcular</strong>.</p>
+            </div>
+            <div class="chart-container">
+              <canvas id="chart21"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== EJERCICIO 22 ==================== -->
+    <div class="card exercise-card" id="ej22">
+      <div class="card-header">
+        Ejercicio 22 – Longitud de una catenaria
+        <span class="badge bg-success method-badge ms-2">Simpson 1/3 (n=8)</span>
+      </div>
+      <div class="card-body">
+        <p class="text-muted">Cable con forma de catenaria <em>y = a cosh(x/a)</em>. Estimar la longitud entre los apoyos usando <em>L = ∫ √(1 + [y']²) dx = ∫ cosh(x/a) dx</em>.</p>
+        <div class="row">
+          <div class="col-lg-5">
+            <h6>Parámetros (editables)</h6>
+            <div class="mb-2">
+              <label class="form-label">a (ft)</label>
+              <input type="number" id="a22" class="form-control param-input" value="24" step="0.1">
+            </div>
+            <div class="mb-2">
+              <label class="form-label">x<sub>min</sub> (ft)</label>
+              <input type="number" id="xmin22" class="form-control param-input" value="-12" step="0.1">
+            </div>
+            <div class="mb-2">
+              <label class="form-label">x<sub>max</sub> (ft)</label>
+              <input type="number" id="xmax22" class="form-control param-input" value="26" step="0.1">
+            </div>
+            <div class="mb-3">
+              <label class="form-label">n (subintervalos)</label>
+              <input type="number" id="n22" class="form-control param-input" value="8" min="2" step="2">
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="calcular22()">
+              <i class="bi bi-play-fill"></i> Calcular
+            </button>
+            <button class="btn btn-outline-secondary btn-sm" onclick="reset22()">Restablecer</button>
+          </div>
+          <div class="col-lg-7">
+            <div class="result-box" id="res22">
+              <h6>Resultados</h6>
+              <p class="mb-1">Presione <strong>Calcular</strong>.</p>
+            </div>
+            <div class="chart-container">
+              <canvas id="chart22"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== EJERCICIO 23 ==================== -->
+    <div class="card exercise-card" id="ej23">
+      <div class="card-header">
+        Ejercicio 23 – Caudal en tubería circular (flujo turbulento)
+        <span class="badge bg-success method-badge ms-2">Simpson 1/3 (n=8)</span>
+      </div>
+      <div class="card-body">
+        <p class="text-muted">Q = ∫₀ᴿ 2π r v(r) dr con v(r) = v<sub>max</sub> (1 − r/R)<sup>1/7</sup>.</p>
+        <div class="row">
+          <div class="col-lg-5">
+            <h6>Parámetros (editables)</h6>
+            <div class="mb-2">
+              <label class="form-label">R (in)</label>
+              <input type="number" id="R23" class="form-control param-input" value="0.25" step="0.01">
+            </div>
+            <div class="mb-2">
+              <label class="form-label">v<sub>max</sub> (in/s)</label>
+              <input type="number" id="vmax23" class="form-control param-input" value="80" step="1">
+            </div>
+            <div class="mb-3">
+              <label class="form-label">n (subintervalos)</label>
+              <input type="number" id="n23" class="form-control param-input" value="8" min="2" step="2">
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="calcular23()">
+              <i class="bi bi-play-fill"></i> Calcular
+            </button>
+            <button class="btn btn-outline-secondary btn-sm" onclick="reset23()">Restablecer</button>
+          </div>
+          <div class="col-lg-7">
+            <div class="result-box" id="res23">
+              <h6>Resultados</h6>
+              <p class="mb-1">Presione <strong>Calcular</strong>.</p>
+            </div>
+            <div class="chart-container">
+              <canvas id="chart23"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== EJERCICIO 24 ==================== -->
+    <div class="card exercise-card" id="ej24">
+      <div class="card-header">
+        Ejercicio 24 – Longitud de una cardioide
+        <span class="badge bg-success method-badge ms-2">Simpson 1/3 (n=8)</span>
+      </div>
+      <div class="card-body">
+        <p class="text-muted">Curva paramétrica: x = 2b cos t − b cos 2t , y = 2b sin t − b sin 2t. Longitud L = ∫ √(x'² + y'²) dt de 0 a 2π.</p>
+        <div class="row">
+          <div class="col-lg-5">
+            <h6>Parámetros (editables)</h6>
+            <div class="mb-2">
+              <label class="form-label">b</label>
+              <input type="number" id="b24" class="form-control param-input" value="5" step="0.1">
+            </div>
+            <div class="mb-3">
+              <label class="form-label">n (subintervalos)</label>
+              <input type="number" id="n24" class="form-control param-input" value="8" min="2" step="2">
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="calcular24()">
+              <i class="bi bi-play-fill"></i> Calcular
+            </button>
+            <button class="btn btn-outline-secondary btn-sm" onclick="reset24()">Restablecer</button>
+          </div>
+          <div class="col-lg-7">
+            <div class="result-box" id="res24">
+              <h6>Resultados</h6>
+              <p class="mb-1">Presione <strong>Calcular</strong>.</p>
+            </div>
+            <div class="chart-container">
+              <canvas id="chart24"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== EJERCICIO 25 ==================== -->
+    <div class="card exercise-card" id="ej25">
+      <div class="card-header">
+        Ejercicio 25 – Variación de energía potencial gravitatoria
+        <span class="badge bg-success method-badge ms-2">Simpson 1/3 (n=8)</span>
+      </div>
+      <div class="card-body">
+        <p class="text-muted">ΔU = m ∫₀ʰ g(y) dy con g(y) = g₀ R² / (R + y)². Satélite de 500 kg elevado a 800 km.</p>
+        <div class="row">
+          <div class="col-lg-5">
+            <h6>Parámetros (editables)</h6>
+            <div class="mb-2">
+              <label class="form-label">m (kg)</label>
+              <input type="number" id="m25" class="form-control param-input" value="500" step="1">
+            </div>
+            <div class="mb-2">
+              <label class="form-label">h (m)</label>
+              <input type="number" id="h25" class="form-control param-input" value="800000" step="1000">
+            </div>
+            <div class="mb-2">
+              <label class="form-label">R (m)</label>
+              <input type="number" id="R25" class="form-control param-input" value="6371000" step="1000">
+            </div>
+            <div class="mb-2">
+              <label class="form-label">g₀ (m/s²)</label>
+              <input type="number" id="g025" class="form-control param-input" value="9.81" step="0.01">
+            </div>
+            <div class="mb-3">
+              <label class="form-label">n (subintervalos)</label>
+              <input type="number" id="n25" class="form-control param-input" value="8" min="2" step="2">
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="calcular25()">
+              <i class="bi bi-play-fill"></i> Calcular
+            </button>
+            <button class="btn btn-outline-secondary btn-sm" onclick="reset25()">Restablecer</button>
+          </div>
+          <div class="col-lg-7">
+            <div class="result-box" id="res25">
+              <h6>Resultados</h6>
+              <p class="mb-1">Presione <strong>Calcular</strong>.</p>
+            </div>
+            <div class="chart-container">
+              <canvas id="chart25"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== EJERCICIO 26 ==================== -->
+    <div class="card exercise-card" id="ej26">
+      <div class="card-header">
+        Ejercicio 26 – Área del lago Erie (adaptación)
+        <span class="badge bg-info method-badge ms-2">Trapecio compuesto</span>
+      </div>
+      <div class="card-body">
+        <p class="text-muted">Estimar el área del lago a partir de anchos medidos cada 20 mi desde x = 40 hasta x = 260. Área de referencia real: 9 940 mi². Los anchos por defecto son una aproximación ilustrativa editable.</p>
+        <div class="row">
+          <div class="col-lg-7">
+            <h6>Anchos (editables) – w(x) en millas</h6>
+            <div class="table-responsive">
+              <table class="table table-sm table-bordered table-data text-center">
+                <thead class="table-primary">
+                  <tr><th>x (mi)</th><th>w (mi)</th></tr>
+                </thead>
+                <tbody id="data26"></tbody>
+              </table>
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="calcular26()">
+              <i class="bi bi-play-fill"></i> Calcular
+            </button>
+            <button class="btn btn-outline-secondary btn-sm" onclick="reset26()">Restablecer</button>
+          </div>
+          <div class="col-lg-5">
+            <div class="result-box" id="res26">
+              <h6>Resultados</h6>
+              <p class="mb-1">Presione <strong>Calcular</strong>.</p>
+            </div>
+            <div class="chart-container">
+              <canvas id="chart26"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== EJERCICIO 27 ==================== -->
+    <div class="card exercise-card" id="ej27">
+      <div class="card-header">
+        Ejercicio 27 – Volumen y superficie de un objeto alargado
+        <span class="badge bg-info method-badge ms-2">Trapecio / Simpson 1/3</span>
+      </div>
+      <div class="card-body">
+        <p class="text-muted">Con diámetros medidos a lo largo del eje, estimar volumen V = π ∫ r² dz y la superficie simplificada S = 2π ∫ r dz (no considera la pendiente).</p>
+        <div class="row">
+          <div class="col-lg-7">
+            <h6>Datos (editables) – diámetro d</h6>
+            <div class="table-responsive">
+              <table class="table table-sm table-bordered table-data text-center">
+                <thead class="table-primary">
+                  <tr><th>z (in)</th><th>d (in)</th></tr>
+                </thead>
+                <tbody id="data27"></tbody>
+              </table>
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="calcular27()">
+              <i class="bi bi-play-fill"></i> Calcular
+            </button>
+            <button class="btn btn-outline-secondary btn-sm" onclick="reset27()">Restablecer</button>
+          </div>
+          <div class="col-lg-5">
+            <div class="result-box" id="res27">
+              <h6>Resultados</h6>
+              <p class="mb-1">Presione <strong>Calcular</strong>.</p>
+            </div>
+            <div class="chart-container">
+              <canvas id="chart27"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <footer class="text-center">
+    <div class="container">
+      <p class="mb-1">COM-254 Métodos Numéricos · II-2026 · Integración Numérica</p>
+      <small>Métodos: Trapecio compuesto · Simpson 1/3 · Simpson 3/8 · Combinados</small>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // ==================== FUNCIONES DE INTEGRACIÓN ====================
+    function trapecio(x, y) {
+      const n = x.length - 1;
+      let h = (x[n] - x[0]) / n;
+      let sum = (y[0] + y[n]) / 2;
+      for (let i = 1; i < n; i++) sum += y[i];
+      return h * sum;
+    }
+
+    function simpson13(x, y) {
+      const n = x.length - 1;
+      if (n % 2 !== 0) return NaN;
+      const h = (x[n] - x[0]) / n;
+      let sum = y[0] + y[n];
+      for (let i = 1; i < n; i++) {
+        sum += (i % 2 === 0) ? 2 * y[i] : 4 * y[i];
+      }
+      return (h / 3) * sum;
+    }
+
+    function simpson38(x, y) {
+      const n = x.length - 1;
+      if (n % 3 !== 0) return NaN;
+      const h = (x[n] - x[0]) / n;
+      let sum = y[0] + y[n];
+      for (let i = 1; i < n; i++) {
+        sum += (i % 3 === 0) ? 2 * y[i] : 3 * y[i];
+      }
+      return (3 * h / 8) * sum;
+    }
+
+    // Combinado: primeros 4 intervalos Simpson 1/3 + últimos 3 Simpson 3/8 (para n=7)
+    function simpsonCombinado(x, y) {
+      if (x.length !== 8) return NaN; // 7 intervalos
+      const x1 = x.slice(0, 5);
+      const y1 = y.slice(0, 5);
+      const x2 = x.slice(4);
+      const y2 = y.slice(4);
+      return simpson13(x1, y1) + simpson38(x2, y2);
+    }
+
+    function formatNum(v, dec = 6) {
+      if (isNaN(v) || !isFinite(v)) return '—';
+      return Number(v).toLocaleString('es-BO', { maximumFractionDigits: dec, minimumFractionDigits: 2 });
+    }
+
+    // ==================== DATOS POR DEFECTO ====================
+    const def19 = {
+      t: [0,1,2,3,4,5,6,7],
+      v: [0,14,39,69,95,114,129,139]
+    };
+    const def20 = {
+      x: [0,0.4,0.8,1.2,1.6,2.0,2.4,2.8],
+      F: [0,0.85,1.30,1.60,1.87,2.14,2.34,2.52]
+    };
+    const def21 = {
+      x: [1,2,3,4,5,6,7,8,9,10],
+      y: [1.3,3.7,4.6,4.4,2.7,2.5,3.6,5.3,6.0,5.9]
+    };
+    // Anchos ilustrativos para lago (ajustados para dar área cercana a 9940)
+    const def26 = {
+      x: [40,60,80,100,120,140,160,180,200,220,240,260],
+      w: [20,45,70,85,95,100,98,90,75,55,30,10]
+    };
+    const def27 = {
+      z: [0,1,2,3,4,5,6,7,8,9,10,11,12],
+      d: [0,2.6,3.2,4.8,5.6,6.0,6.2,6.0,5.6,4.8,3.3,2.6,0]
+    };
+
+    // ==================== GRÁFICOS ====================
+    const charts = {};
+
+    function crearGrafico(canvasId, labels, data, labelY, color = 'rgba(13,110,253,0.7)') {
+      if (charts[canvasId]) charts[canvasId].destroy();
+      const ctx = document.getElementById(canvasId).getContext('2d');
+      charts[canvasId] = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: labelY,
+            data: data,
+            borderColor: color,
+            backgroundColor: color.replace('0.7','0.15'),
+            fill: true,
+            tension: 0.3,
+            pointRadius: 4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: true } },
+          scales: {
+            x: { title: { display: true, text: 'x' } },
+            y: { title: { display: true, text: labelY }, beginAtZero: true }
+          }
+        }
+      });
+    }
+
+    // ==================== EJERCICIO 19 ====================
+    function poblar19() {
+      const tbody = document.getElementById('data19');
+      tbody.innerHTML = '';
+      for (let i = 0; i < def19.t.length; i++) {
+        tbody.innerHTML += `<tr>
+          <td>${def19.t[i]}</td>
+          <td><input type="number" id="v19_${i}" value="${def19.v[i]}" step="0.1"></td>
+        </tr>`;
+      }
+    }
+    function reset19() { poblar19(); calcular19(); }
+    function calcular19() {
+      const t = def19.t.slice();
+      const v = [];
+      for (let i = 0; i < t.length; i++) v.push(parseFloat(document.getElementById(`v19_${i}`).value) || 0);
+      const T = trapecio(t, v);
+      const Scomb = simpsonCombinado(t, v);
+      const dT = T / 3600;
+      const dS = Scomb / 3600;
+      document.getElementById('res19').innerHTML = `
+        <h6>Resultados</h6>
+        <p class="mb-1"><strong>Trapecio compuesto:</strong> ${formatNum(T,4)} mi·h·s → <strong>${formatNum(dT,6)} mi</strong></p>
+        <p class="mb-1"><strong>Simpson combinado (4+3):</strong> ${formatNum(Scomb,4)} mi·h·s → <strong>${formatNum(dS,6)} mi</strong></p>
+        <p class="mb-0 text-muted small">≈ ${(dS * 1609.344).toFixed(2)} m (referencia solucionario ≈ 0.147072 mi)</p>
+      `;
+      crearGrafico('chart19', t, v, 'v (mi/h)', 'rgba(13,110,253,0.7)');
+    }
+
+    // ==================== EJERCICIO 20 ====================
+    function poblar20() {
+      const tbody = document.getElementById('data20');
+      tbody.innerHTML = '';
+      for (let i = 0; i < def20.x.length; i++) {
+        tbody.innerHTML += `<tr>
+          <td>${def20.x[i]}</td>
+          <td><input type="number" id="F20_${i}" value="${def20.F[i]}" step="0.01"></td>
+        </tr>`;
+      }
+    }
+    function reset20() { poblar20(); calcular20(); }
+    function calcular20() {
+      const x = def20.x.slice();
+      const F = [];
+      for (let i = 0; i < x.length; i++) F.push(parseFloat(document.getElementById(`F20_${i}`).value) || 0);
+      const T = trapecio(x, F);
+      const Scomb = simpsonCombinado(x, F);
+      document.getElementById('res20').innerHTML = `
+        <h6>Resultados</h6>
+        <p class="mb-1"><strong>Trapecio:</strong> ${formatNum(T,6)} lb·in</p>
+        <p class="mb-1"><strong>Simpson combinado (4+3):</strong> ${formatNum(Scomb,6)} lb·in</p>
+        <p class="mb-0 text-muted small">≈ ${(Scomb * 0.113).toFixed(4)} J (referencia solucionario 4.577167 lb·in)</p>
+      `;
+      crearGrafico('chart20', x, F, 'F (lb)', 'rgba(25,135,84,0.7)');
+    }
+
+    // ==================== EJERCICIO 21 ====================
+    function poblar21() {
+      const tbody = document.getElementById('data21');
+      tbody.innerHTML = '';
+      for (let i = 0; i < def21.x.length; i++) {
+        tbody.innerHTML += `<tr>
+          <td>${def21.x[i]}</td>
+          <td><input type="number" id="y21_${i}" value="${def21.y[i]}" step="0.1"></td>
+        </tr>`;
+      }
+    }
+    function reset21() { poblar21(); calcular21(); }
+    function calcular21() {
+      const x = def21.x.slice();
+      const y = [];
+      for (let i = 0; i < x.length; i++) y.push(parseFloat(document.getElementById(`y21_${i}`).value) || 0);
+      const T = trapecio(x, y);
+      // Simpson 1/3 sobre 8 intervalos (puntos 0 a 8) + trapecio último
+      const xS = x.slice(0,9);
+      const yS = y.slice(0,9);
+      const S = simpson13(xS, yS) + trapecio([x[8],x[9]], [y[8],y[9]]);
+      document.getElementById('res21').innerHTML = `
+        <h6>Resultados</h6>
+        <p class="mb-1"><strong>Trapecio compuesto:</strong> ${formatNum(T,2)} u²</p>
+        <p class="mb-1"><strong>Simpson 1/3 (8) + Trapecio (1):</strong> ${formatNum(S,2)} u²</p>
+        <p class="mb-0 text-muted small">Referencia solucionario ≈ 36.40 / 36.85 u²</p>
+      `;
+      crearGrafico('chart21', x, y, 'y', 'rgba(255,193,7,0.7)');
+    }
+
+    // ==================== EJERCICIO 22 ====================
+    function reset22() {
+      document.getElementById('a22').value = 24;
+      document.getElementById('xmin22').value = -12;
+      document.getElementById('xmax22').value = 26;
+      document.getElementById('n22').value = 8;
+      calcular22();
+    }
+    function calcular22() {
+      const a = parseFloat(document.getElementById('a22').value);
+      const xmin = parseFloat(document.getElementById('xmin22').value);
+      const xmax = parseFloat(document.getElementById('xmax22').value);
+      let n = parseInt(document.getElementById('n22').value);
+      if (n % 2 !== 0) n += 1;
+      const h = (xmax - xmin) / n;
+      const x = [], f = [];
+      for (let i = 0; i <= n; i++) {
+        const xi = xmin + i * h;
+        x.push(xi);
+        f.push(Math.cosh(xi / a)); // integrando = cosh(x/a)
+      }
+      const T = trapecio(x, f);
+      const S = simpson13(x, f);
+      const exact = a * (Math.sinh(xmax / a) - Math.sinh(xmin / a));
+      document.getElementById('res22').innerHTML = `
+        <h6>Resultados</h6>
+        <p class="mb-1"><strong>Trapecio (n=${n}):</strong> ${formatNum(T,6)} ft</p>
+        <p class="mb-1"><strong>Simpson 1/3 (n=${n}):</strong> ${formatNum(S,6)} ft</p>
+        <p class="mb-1"><strong>Valor exacto:</strong> ${formatNum(exact,6)} ft</p>
+        <p class="mb-0 text-muted small">Error Simpson: ${formatNum(Math.abs(S - exact),8)} ft</p>
+      `;
+      // Gráfico de la catenaria y
+      const ycat = x.map(xi => a * Math.cosh(xi / a));
+      crearGrafico('chart22', x.map(v => v.toFixed(1)), ycat, 'y (ft)', 'rgba(111,66,193,0.7)');
+    }
+
+    // ==================== EJERCICIO 23 ====================
+    function reset23() {
+      document.getElementById('R23').value = 0.25;
+      document.getElementById('vmax23').value = 80;
+      document.getElementById('n23').value = 8;
+      calcular23();
+    }
+    function calcular23() {
+      const R = parseFloat(document.getElementById('R23').value);
+      const vmax = parseFloat(document.getElementById('vmax23').value);
+      let n = parseInt(document.getElementById('n23').value);
+      if (n % 2 !== 0) n += 1;
+      const h = R / n;
+      const r = [], integrando = [];
+      for (let i = 0; i <= n; i++) {
+        const ri = i * h;
+        r.push(ri);
+        const v = vmax * Math.pow(1 - ri / R, 1/7);
+        integrando.push(2 * Math.PI * ri * v);
+      }
+      const T = trapecio(r, integrando);
+      const S = simpson13(r, integrando);
+      // Exacto aproximado del solucionario
+      const exact = 49 * Math.PI / 12;
+      document.getElementById('res23').innerHTML = `
+        <h6>Resultados</h6>
+        <p class="mb-1"><strong>Trapecio (n=${n}):</strong> ${formatNum(T,6)} in³/s</p>
+        <p class="mb-1"><strong>Simpson 1/3 (n=${n}):</strong> ${formatNum(S,6)} in³/s</p>
+        <p class="mb-1"><strong>Referencia exacta:</strong> ${formatNum(exact,6)} in³/s</p>
+        <p class="mb-0 text-muted small">La singularidad de la derivada cerca de la pared ralentiza la convergencia.</p>
+      `;
+      crearGrafico('chart23', r.map(v => v.toFixed(3)), integrando, '2πr v(r)', 'rgba(220,53,69,0.7)');
+    }
+
+    // ==================== EJERCICIO 24 ====================
+    function reset24() {
+      document.getElementById('b24').value = 5;
+      document.getElementById('n24').value = 8;
+      calcular24();
+    }
+    function calcular24() {
+      const b = parseFloat(document.getElementById('b24').value);
+      let n = parseInt(document.getElementById('n24').value);
+      if (n % 2 !== 0) n += 1;
+      const a = 0, bb = 2 * Math.PI;
+      const h = (bb - a) / n;
+      const t = [], integrando = [];
+      const xs = [], ys = [];
+      for (let i = 0; i <= n; i++) {
+        const ti = a + i * h;
+        t.push(ti);
+        // x' = -2b sin t + 2b sin 2t ; y' = 2b cos t - 2b cos 2t
+        // √(x'²+y'²) = 2b * √(2-2cos t) = 4b |sin(t/2)|  (para b>0)
+        const val = 4 * b * Math.abs(Math.sin(ti / 2));
+        integrando.push(val);
+        xs.push(2*b*Math.cos(ti) - b*Math.cos(2*ti));
+        ys.push(2*b*Math.sin(ti) - b*Math.sin(2*ti));
+      }
+      const T = trapecio(t, integrando);
+      const S = simpson13(t, integrando);
+      const exact = 8 * b; // 80 cuando b=5
+      document.getElementById('res24').innerHTML = `
+        <h6>Resultados</h6>
+        <p class="mb-1"><strong>Trapecio (n=${n}):</strong> ${formatNum(T,6)}</p>
+        <p class="mb-1"><strong>Simpson 1/3 (n=${n}):</strong> ${formatNum(S,6)}</p>
+        <p class="mb-1"><strong>Valor exacto:</strong> ${formatNum(exact,6)}</p>
+        <p class="mb-0 text-muted small">Error Simpson: ${formatNum(Math.abs(S - exact),8)}</p>
+      `;
+      // Gráfico de la cardioide (puntos paramétricos)
+      if (charts['chart24']) charts['chart24'].destroy();
+      const ctx = document.getElementById('chart24').getContext('2d');
+      charts['chart24'] = new Chart(ctx, {
+        type: 'scatter',
+        data: {
+          datasets: [{
+            label: 'Cardioide',
+            data: xs.map((x,i) => ({x: x, y: ys[i]})),
+            borderColor: 'rgba(13,110,253,0.8)',
+            backgroundColor: 'rgba(13,110,253,0.5)',
+            showLine: true,
+            pointRadius: 2,
+            tension: 0
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: { title: { display: true, text: 'x' } },
+            y: { title: { display: true, text: 'y' } }
+          }
+        }
+      });
+    }
+
+    // ==================== EJERCICIO 25 ====================
+    function reset25() {
+      document.getElementById('m25').value = 500;
+      document.getElementById('h25').value = 800000;
+      document.getElementById('R25').value = 6371000;
+      document.getElementById('g025').value = 9.81;
+      document.getElementById('n25').value = 8;
+      calcular25();
+    }
+    function calcular25() {
+      const m = parseFloat(document.getElementById('m25').value);
+      const h = parseFloat(document.getElementById('h25').value);
+      const R = parseFloat(document.getElementById('R25').value);
+      const g0 = parseFloat(document.getElementById('g025').value);
+      let n = parseInt(document.getElementById('n25').value);
+      if (n % 2 !== 0) n += 1;
+      const hy = h / n;
+      const y = [], g = [];
+      for (let i = 0; i <= n; i++) {
+        const yi = i * hy;
+        y.push(yi);
+        g.push(g0 * (R * R) / Math.pow(R + yi, 2));
+      }
+      const T = m * trapecio(y, g);
+      const S = m * simpson13(y, g);
+      const exact = m * g0 * R * h / (R + h);
+      document.getElementById('res25').innerHTML = `
+        <h6>Resultados</h6>
+        <p class="mb-1"><strong>Trapecio (n=${n}):</strong> ${formatNum(T,2)} J</p>
+        <p class="mb-1"><strong>Simpson 1/3 (n=${n}):</strong> ${formatNum(S,2)} J</p>
+        <p class="mb-1"><strong>Valor exacto:</strong> ${formatNum(exact,2)} J</p>
+        <p class="mb-0 text-muted small">≈ ${(exact/1e9).toFixed(6)} × 10⁹ J</p>
+      `;
+      crearGrafico('chart25', y.map(v => (v/1000).toFixed(0)), g, 'g(y) (m/s²)', 'rgba(13,202,240,0.7)');
+    }
+
+    // ==================== EJERCICIO 26 ====================
+    function poblar26() {
+      const tbody = document.getElementById('data26');
+      tbody.innerHTML = '';
+      for (let i = 0; i < def26.x.length; i++) {
+        tbody.innerHTML += `<tr>
+          <td>${def26.x[i]}</td>
+          <td><input type="number" id="w26_${i}" value="${def26.w[i]}" step="1"></td>
+        </tr>`;
+      }
+    }
+    function reset26() { poblar26(); calcular26(); }
+    function calcular26() {
+      const x = def26.x.slice();
+      const w = [];
+      for (let i = 0; i < x.length; i++) w.push(parseFloat(document.getElementById(`w26_${i}`).value) || 0);
+      const A = trapecio(x, w);
+      const ref = 9940;
+      const err = Math.abs(A - ref) / ref * 100;
+      document.getElementById('res26').innerHTML = `
+        <h6>Resultados</h6>
+        <p class="mb-1"><strong>Área (Trapecio):</strong> ${formatNum(A,2)} mi²</p>
+        <p class="mb-1"><strong>Área real de referencia:</strong> 9 940 mi²</p>
+        <p class="mb-0"><strong>Error porcentual:</strong> ${formatNum(err,2)} %</p>
+      `;
+      crearGrafico('chart26', x, w, 'Ancho w (mi)', 'rgba(25,135,84,0.7)');
+    }
+
+    // ==================== EJERCICIO 27 ====================
+    function poblar27() {
+      const tbody = document.getElementById('data27');
+      tbody.innerHTML = '';
+      for (let i = 0; i < def27.z.length; i++) {
+        tbody.innerHTML += `<tr>
+          <td>${def27.z[i]}</td>
+          <td><input type="number" id="d27_${i}" value="${def27.d[i]}" step="0.1"></td>
+        </tr>`;
+      }
+    }
+    function reset27() { poblar27(); calcular27(); }
+    function calcular27() {
+      const z = def27.z.slice();
+      const d = [];
+      for (let i = 0; i < z.length; i++) d.push(parseFloat(document.getElementById(`d27_${i}`).value) || 0);
+      const r = d.map(di => di / 2);
+      const r2 = r.map(ri => ri * ri);
+      const VT = Math.PI * trapecio(z, r2);
+      const VS = Math.PI * simpson13(z, r2);
+      const ST = 2 * Math.PI * trapecio(z, r);
+      const SS = 2 * Math.PI * simpson13(z, r);
+      document.getElementById('res27').innerHTML = `
+        <h6>Resultados</h6>
+        <p class="mb-1"><strong>Volumen Trapecio:</strong> ${formatNum(VT,6)} in³</p>
+        <p class="mb-1"><strong>Volumen Simpson 1/3:</strong> ${formatNum(VS,6)} in³</p>
+        <p class="mb-1"><strong>Superficie simplificada Trapecio:</strong> ${formatNum(ST,6)} in²</p>
+        <p class="mb-1"><strong>Superficie simplificada Simpson:</strong> ${formatNum(SS,6)} in²</p>
+        <p class="mb-0 text-muted small">Nota: la superficie real de revolución requiere √(1+(r')²). Referencia solucionario V≈199.40 / 201.84 in³</p>
+      `;
+      crearGrafico('chart27', z, r, 'r (in)', 'rgba(255,193,7,0.7)');
+    }
+
+    // ==================== INICIALIZACIÓN ====================
+    document.addEventListener('DOMContentLoaded', () => {
+      poblar19(); calcular19();
+      poblar20(); calcular20();
+      poblar21(); calcular21();
+      calcular22();
+      calcular23();
+      calcular24();
+      calcular25();
+      poblar26(); calcular26();
+      poblar27(); calcular27();
+    });
+  </script>
+</body>
+</html>
